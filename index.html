@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valley Brews | What's happening in State College this week</title>
+  <meta name="description" content="Valley Brews is one weekly feed of specials, events, and promos from State College businesses, posted by the businesses themselves.">
+  <style>
+    /* Colors used across the page */
+    :root {
+      --navy: #0b2545;
+      --blue: #1e5aa8;
+      --light: #f4f7fb;
+      --text: #1c2430;
+      --muted: #5b6675;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+    /* Top bar */
+    header { background: var(--navy); color: var(--white); padding: 16px 0; }
+    header .container { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.3rem; font-weight: 800; letter-spacing: 0.5px; }
+    .by { font-size: 0.9rem; opacity: 0.85; }
+
+    /* Big intro section */
+    .hero { background: var(--navy); color: var(--white); padding: 60px 0 80px; text-align: center; }
+    .hero h1 { font-size: 2.4rem; line-height: 1.2; margin-bottom: 16px; }
+    .hero p { font-size: 1.15rem; max-width: 640px; margin: 0 auto 28px; opacity: 0.9; }
+
+    .button {
+      display: inline-block;
+      background: var(--white);
+      color: var(--navy);
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .button:hover { background: #dce6f5; }
+    .note { display: block; margin-top: 12px; font-size: 0.9rem; opacity: 0.75; }
+
+    /* Regular sections */
+    section { padding: 64px 0; }
+    section.alt { background: var(--light); }
+    h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--navy); }
+    .sub { text-align: center; color: var(--muted); margin-bottom: 40px; }
+
+    /* Cards in a grid: 3 across on computers, stacked on phones */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .card {
+      background: var(--white);
+      border: 1px solid #e1e7ef;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .card h3 { color: var(--navy); margin-bottom: 8px; font-size: 1.15rem; }
+    .card p { color: var(--muted); }
+    .step {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--blue); color: var(--white); font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    /* Why we're different */
+    .different { max-width: 640px; margin: 0 auto; list-style: none; }
+    .different li { padding: 12px 0; border-bottom: 1px solid #e1e7ef; }
+    .different li:last-child { border-bottom: none; }
+    .different strong { color: var(--navy); }
+
+    footer { background: var(--navy); color: var(--white); text-align: center; padding: 28px 0; font-size: 0.95rem; }
+    footer p + p { opacity: 0.75; margin-top: 4px; font-size: 0.85rem; }
+
+    /* Phone-size screens */
+    @media (max-width: 720px) {
+      .hero h1 { font-size: 1.8rem; }
+      .grid { grid-template-columns: 1fr; }
+      header .container { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="logo">Valley Brews</div>
+      <div class="by">Built by Vincent DiLieto</div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="container">
+      <h1>Everything happening in State College this week, in one place.</h1>
+      <p>Valley Brews is one weekly feed of specials, events, and promos from local bars, restaurants, shops, and hotels, posted by the businesses themselves.</p>
+      <button class="button" type="button">Coming soon</button>
+      <span class="note">Launching for Penn State students, visitors, and local businesses.</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <h2>How it works</h2>
+      <p class="sub">Three simple steps.</p>
+      <div class="grid">
+        <div class="card">
+          <div class="step">1</div>
+          <h3>Businesses post</h3>
+          <p>Local businesses log in and post their own specials, events, and promos. An AI assistant turns a rough note like "half off wings tuesday" into a clean post.</p>
+        </div>
+        <div class="card">
+          <div class="step">2</div>
+          <h3>Students and visitors browse</h3>
+          <p>Everyone sees one free weekly feed. Filter by specials, events, food, or game day to find what's happening tonight.</p>
+        </div>
+        <div class="card">
+          <div class="step">3</div>
+          <h3>Businesses see results</h3>
+          <p>Businesses see how many people viewed and clicked their posts, so they know what's working.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="container">
+      <h2>Who it's for</h2>
+      <p class="sub">Built for State College, PA.</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Local businesses</h3>
+          <p>Bars, restaurants, shops, and hotels that want more people through the door without paying for ads that don't reach students.</p>
+        </div>
+        <div class="card">
+          <h3>Penn State students</h3>
+          <p>A quick way to find deals and things to do this week, all in one feed instead of scrolling a dozen Instagram accounts.</p>
+        </div>
+        <div class="card">
+          <h3>Game-weekend visitors</h3>
+          <p>Alumni, families, and fans in town for a football weekend get a game-weekend view of where to eat, drink, shop, and stay.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Why Valley Brews</h2>
+      <p class="sub">What makes it worth using.</p>
+      <ul class="different">
+        <li><strong>Always up to date.</strong> Businesses manage their own posts, so specials are current, not weeks old.</li>
+        <li><strong>AI specials assistant.</strong> Managers type a quick note and get a finished post, an Instagram caption, and a text-message version.</li>
+        <li><strong>Game-weekend view.</strong> One page that shows everything going on during home football weekends.</li>
+        <li><strong>Free for the public.</strong> Browsing the feed is always free.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>Valley Brews &middot; Created by Vincent DiLieto</p>
+      <p>Engineering 310 SaaS project, Penn State. Some listings may be 21+.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
