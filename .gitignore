@@ -1,0 +1,14 @@
+# Installed packages and build output
+node_modules/
+.next/
+out/
+
+# Secret keys: never commit these
+.env
+.env.*
+
+# Vercel local settings
+.vercel/
+
+# Class spreadsheet, kept off the public repo
+*.xlsx
