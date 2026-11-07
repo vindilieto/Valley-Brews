@@ -51,7 +51,7 @@ export default function Home() {
             <div className="card">
               <div className="step">3</div>
               <h3>Businesses see results</h3>
-              <p>See how many people viewed and clicked your posts, so you know what's working.</p>
+              <p>See how many people liked, saved, and followed, so you know what's working.</p>
             </div>
           </div>
         </div>
@@ -104,28 +104,36 @@ export default function Home() {
 
       <section className="alt" id="pricing">
         <div className="container">
-          <h2>Why go Pro?</h2>
+          <h2>Plans for businesses</h2>
           <p className="sub">One extra table on a slow Tuesday can pay for the month.</p>
-          <div className="grid two">
+          <div className="grid">
             <div className="card">
               <h3>Free</h3>
               <p className="price">$0 <span>/ month</span></p>
               <ul>
-                <li>Business profile page</li>
-                <li>Up to 5 active posts</li>
-                <li>Post by hand</li>
+                <li>Business page with logo, hours, and menu</li>
+                <li>Photos on your posts</li>
+                <li>Up to 5 upcoming posts</li>
               </ul>
               <Link href="/signup" className="button primary">Start free</Link>
             </div>
-            <div className="card featured">
-              <h3>Pro</h3>
-              <p className="price">$35 <span>/ month</span></p>
+            <div className="card">
+              <h3>Plus</h3>
+              <p className="price">$15 <span>/ month</span></p>
               <ul>
+                <li>Everything in Free</li>
                 <li>Unlimited posts</li>
                 <li>Weekly specials that repeat on their own</li>
+              </ul>
+              <Link href="/signup" className="button primary">Get Plus</Link>
+            </div>
+            <div className="card featured">
+              <h3>Pro</h3>
+              <p className="price">$30 <span>/ month</span></p>
+              <ul>
+                <li>Everything in Plus</li>
                 <li>AI specials assistant</li>
-                <li>Views and clicks stats</li>
-                <li>Priority placement in the feed</li>
+                <li>Top spots in the feed</li>
               </ul>
               <Link href="/signup" className="button primary">Go Pro</Link>
             </div>

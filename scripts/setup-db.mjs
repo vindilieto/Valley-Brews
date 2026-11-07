@@ -64,6 +64,18 @@ await sql`
     PRIMARY KEY (user_id, business_id)
   )`;
 
+// Business page details.
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS hours TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS menu_url TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS logo_url TEXT NOT NULL DEFAULT ''`;
+
+// Repeating posts store the weekdays they happen on (0 = Sunday ... 6 = Saturday).
+// An empty list means a one-time post on post_date.
+await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS repeat_days INTEGER[] NOT NULL DEFAULT '{}'`;
+await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS image_url TEXT NOT NULL DEFAULT ''`;
+
 // The class demo account: always exists, always Pro, password is reset on every run.
 const demoHash = await bcrypt.hash("password123!", 10);
 await sql`
@@ -74,6 +86,12 @@ await sql`
 
 // Give the demo business a few upcoming posts so the feed is never empty.
 const [demo] = await sql`SELECT id FROM users WHERE email = 'demo@demo.com'`;
+await sql`
+  UPDATE users SET
+    bio = 'Wings, burgers, and every Penn State game on 12 TVs. A downtown State College favorite.',
+    address = '100 W College Ave, State College, PA 16801',
+    hours = ${"Mon-Thu: 11 AM - 12 AM\nFri-Sat: 11 AM - 2 AM\nSun: 11 AM - 10 PM"}
+  WHERE id = ${demo.id} AND bio = ''`;
 const [{ upcoming }] = await sql`
   SELECT count(*)::int AS upcoming FROM posts
   WHERE business_id = ${demo.id}

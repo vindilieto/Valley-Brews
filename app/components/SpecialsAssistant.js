@@ -31,7 +31,7 @@ export default function SpecialsAssistant({ today }) {
         <div className="result">
           <h3>Check the details, then post it</h3>
           <p className="muted">The AI can guess dates wrong, so make sure everything looks right.</p>
-          <PostForm key={JSON.stringify(post)} initial={post} today={today} />
+          <PostForm key={JSON.stringify(post)} initial={post} today={today} canRepeat />
           <h4>Instagram caption</h4>
           <p>{post.instagram_caption}</p>
           <h4>Text message</h4>

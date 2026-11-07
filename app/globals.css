@@ -196,6 +196,54 @@ h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--nav
 }
 .pill:hover { border-color: var(--blue); }
 .pill.on { background: #e8f0fb; border-color: var(--blue); color: var(--blue); font-weight: 600; }
+/* Photos */
+.photoinput input[type="file"] { padding: 8px; font-size: 0.9rem; }
+.preview { width: 100%; max-height: 260px; object-fit: cover; border-radius: 10px; }
+.preview.round { width: 96px; height: 96px; border-radius: 50%; }
+.postphoto { width: 100%; max-height: 420px; object-fit: cover; border-radius: 10px; margin: 12px 0 4px; }
+.thumb { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.grow { flex: 1; }
+
+/* Repeat days */
+.repeat { border: none; }
+.repeat legend { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+.repeat:disabled { opacity: 0.55; }
+.days { display: flex; flex-wrap: wrap; gap: 6px; }
+.postform .dayopt {
+  flex-direction: row; align-items: center; gap: 6px; font-weight: 400;
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px;
+}
+.postform .dayopt input { padding: 0; }
+.hint { font-size: 0.85rem; margin-top: 6px; }
+.badge.repeat { background: #e8f0fb; color: var(--blue); }
+
+/* Plan choice on the dashboard */
+.planpick { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.planpick h3 { color: var(--navy); }
+.planpick p { margin-bottom: 12px; }
+
+/* Logos and business pages */
+.business { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.business:hover { text-decoration: underline; }
+.logo-img { border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.logo-img.small { width: 28px; height: 28px; }
+.logo-img.large { width: 96px; height: 96px; }
+.logo-img.letter {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--navy); color: var(--white); font-weight: 800;
+}
+.logo-img.small.letter { font-size: 0.85rem; }
+.logo-img.large.letter { font-size: 2.4rem; }
+.profile { display: flex; align-items: center; gap: 20px; }
+.profile h1 { margin-bottom: 0; }
+.profile form { margin-top: 8px; }
+.bio { margin-top: 16px; font-size: 1.05rem; }
+.details { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.details p { color: var(--text); display: flex; flex-direction: column; }
+.details a { color: var(--blue); }
+.hours { white-space: pre-line; }
+.sectiontitle { text-align: left; font-size: 1.3rem; margin: 32px 0 12px; }
+
 .hero .button + .button { margin-left: 10px; }
 .button.outline { background: transparent; color: var(--white); border: 2px solid var(--white); }
 .button.outline:hover { background: rgba(255, 255, 255, 0.1); }
@@ -211,5 +259,7 @@ footer p + p { opacity: 0.75; margin-top: 4px; font-size: 0.85rem; }
   .hero .button + .button { margin-left: auto; }
   .datestrip { gap: 4px; }
   .logo { font-size: 1.1rem; }
+  .planpick { grid-template-columns: 1fr; }
+  .logo-img.large { width: 72px; height: 72px; }
   .nav { gap: 12px; font-size: 0.9rem; }
 }

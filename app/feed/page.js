@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { toggleFollow, toggleLike, toggleSave } from "@/app/actions/feed";
+import PostCard from "@/app/components/PostCard";
 import TopBar from "@/app/components/TopBar";
 import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
-import { CATEGORIES, formatDate, formatTimes, todayInStateCollege } from "@/lib/format";
+import { addDays, CATEGORIES, formatDate, todayInStateCollege } from "@/lib/format";
 
 export const metadata = { title: "This week | Valley Brews" };
 
@@ -12,12 +12,6 @@ const VIEWS = [
   { id: "following", label: "Following" },
   { id: "saved", label: "Saved" },
 ];
-
-function addDays(date, days) {
-  const next = new Date(`${date}T12:00:00Z`);
-  next.setUTCDate(next.getUTCDate() + days);
-  return next.toISOString().slice(0, 10);
-}
 
 function feedLink(view, category) {
   const params = new URLSearchParams();
@@ -35,16 +29,21 @@ export default async function FeedPage({ searchParams }) {
   const category = CATEGORIES.includes(params.category) ? params.category : "";
 
   const today = todayInStateCollege();
-  const lastDay = addDays(today, 6);
+  const weekEnd = addDays(today, 6);
+  // Saved one-time posts can be further out than this week.
+  const lastDay = view === "saved" ? addDays(today, 59) : weekEnd;
   const userId = user?.id ?? 0;
 
-  // This week's posts. Saved posts show even if they're further out.
+  // One row per post per day it happens. Repeating posts show on each matching day this week.
   // Pro businesses come first each day ("priority placement").
   const posts = await sql`
+    WITH days AS (
+      SELECT d::date AS day FROM generate_series(${today}::date, ${lastDay}::date, interval '1 day') AS d
+    )
     SELECT posts.id, posts.business_id, posts.title, posts.description, posts.category,
-           posts.start_time, posts.end_time, posts.is_21_plus,
-           to_char(posts.post_date, 'YYYY-MM-DD') AS date,
-           users.business_name,
+           posts.start_time, posts.end_time, posts.is_21_plus, posts.repeat_days, posts.image_url,
+           to_char(days.day, 'YYYY-MM-DD') AS date,
+           users.business_name, users.logo_url,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,
            EXISTS (SELECT 1 FROM likes WHERE likes.post_id = posts.id AND likes.user_id = ${userId}) AS liked,
            EXISTS (SELECT 1 FROM saves WHERE saves.post_id = posts.id AND saves.user_id = ${userId}) AS saved,
@@ -52,14 +51,17 @@ export default async function FeedPage({ searchParams }) {
                    AND follows.user_id = ${userId}) AS following
     FROM posts
     JOIN users ON users.id = posts.business_id
-    WHERE posts.post_date >= ${today}
-      AND (${view} = 'saved' OR posts.post_date <= ${lastDay})
-      AND (${category} = '' OR posts.category = ${category})
+    JOIN days ON (
+      (cardinality(posts.repeat_days) = 0 AND posts.post_date = days.day)
+      OR (cardinality(posts.repeat_days) > 0 AND posts.post_date <= days.day AND days.day <= ${weekEnd}::date
+          AND extract(dow FROM days.day)::int = ANY(posts.repeat_days))
+    )
+    WHERE (${category} = '' OR posts.category = ${category})
       AND (${view} <> 'following' OR EXISTS (
             SELECT 1 FROM follows WHERE follows.business_id = posts.business_id AND follows.user_id = ${userId}))
       AND (${view} <> 'saved' OR EXISTS (
             SELECT 1 FROM saves WHERE saves.post_id = posts.id AND saves.user_id = ${userId}))
-    ORDER BY posts.post_date, (users.plan = 'pro') DESC, posts.start_time, posts.id`;
+    ORDER BY days.day, (users.plan = 'pro') DESC, posts.start_time, posts.id`;
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, i));
   const postsByDay = new Map();
@@ -128,53 +130,9 @@ export default async function FeedPage({ searchParams }) {
         {[...postsByDay].map(([day, dayPosts]) => (
           <section key={day} id={`day-${day}`} className="day">
             <h2>{day === today ? `Today, ${formatDate(day)}` : formatDate(day)}</h2>
-            {dayPosts.map((post) => {
-              const times = formatTimes(post.start_time, post.end_time);
-              return (
-                <article key={post.id} className="card post">
-                  <div className="posthead">
-                    <span className="business">{post.business_name}</span>
-                    {isCustomer && (
-                      <form action={toggleFollow}>
-                        <input type="hidden" name="businessId" value={post.business_id} />
-                        <button type="submit" className={`pill ${post.following ? "on" : ""}`}>
-                          {post.following ? "Following" : "Follow"}
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                  <h3>{post.title}</h3>
-                  <p className="meta">
-                    {times && `${times} · `}{post.category}
-                    {post.is_21_plus && <span className="badge">21+</span>}
-                  </p>
-                  <p>{post.description}</p>
-                  <div className="actions">
-                    {isCustomer ? (
-                      <>
-                        <form action={toggleLike}>
-                          <input type="hidden" name="postId" value={post.id} />
-                          <button type="submit" className={`pill ${post.liked ? "on" : ""}`}
-                            aria-label={post.liked ? "Unlike" : "Like"}>
-                            {post.liked ? "♥" : "♡"} {post.likes}
-                          </button>
-                        </form>
-                        <form action={toggleSave}>
-                          <input type="hidden" name="postId" value={post.id} />
-                          <button type="submit" className={`pill ${post.saved ? "on" : ""}`}>
-                            {post.saved ? "Saved" : "Save"}
-                          </button>
-                        </form>
-                      </>
-                    ) : user ? (
-                      <span className="muted">♡ {post.likes}</span>
-                    ) : (
-                      <Link href="/signup?type=customer" className="pill">♡ {post.likes}</Link>
-                    )}
-                  </div>
-                </article>
-              );
-            })}
+            {dayPosts.map((post) => (
+              <PostCard key={`${post.id}-${day}`} post={post} user={user} />
+            ))}
           </section>
         ))}
       </main>

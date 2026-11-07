@@ -2,13 +2,14 @@
 
 import { getCurrentUser } from "@/lib/auth";
 import { writePost } from "@/lib/assistant";
+import { hasAI } from "@/lib/plans";
 
 const MAX_NOTE_LENGTH = 500;
 
 export async function generatePost(previousState, formData) {
   const user = await getCurrentUser();
   if (!user) return { error: "Please log in again." };
-  if (user.plan !== "pro") return { error: "The AI assistant is part of the Pro plan." };
+  if (!hasAI(user.plan)) return { error: "The AI assistant is part of the Pro plan." };
 
   const note = String(formData.get("note") ?? "").trim();
   if (!note) return { error: "Type a quick note about your special first." };

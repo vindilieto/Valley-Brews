@@ -3,13 +3,16 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { getStripe, PRO_PRICE_CENTS } from "@/lib/stripe";
+import { isUpgrade, PAID_PLANS } from "@/lib/plans";
+import { getStripe } from "@/lib/stripe";
 
-// Sends the user to Stripe's hosted payment page for the Pro plan.
-export async function startCheckout() {
+// Sends the user to Stripe's hosted payment page for the plan they picked.
+export async function startCheckout(formData) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.plan === "pro") redirect("/dashboard");
+
+  const plan = String(formData.get("plan") ?? "");
+  if (user.role !== "business" || !isUpgrade(user.plan, plan)) redirect("/dashboard");
 
   const headerList = await headers();
   const protocol = headerList.get("x-forwarded-proto") ?? "http";
@@ -19,14 +22,15 @@ export async function startCheckout() {
     mode: "subscription",
     customer_email: user.email,
     client_reference_id: String(user.id),
+    metadata: { plan },
     line_items: [
       {
         quantity: 1,
         price_data: {
           currency: "usd",
-          unit_amount: PRO_PRICE_CENTS,
+          unit_amount: PAID_PLANS[plan].cents,
           recurring: { interval: "month" },
-          product_data: { name: "Valley Brews Pro" },
+          product_data: { name: `Valley Brews ${PAID_PLANS[plan].name}` },
         },
       },
     ],

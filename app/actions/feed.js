@@ -19,7 +19,7 @@ export async function toggleLike(formData) {
   if (removed.length === 0) {
     await sql`INSERT INTO likes (user_id, post_id) VALUES (${user.id}, ${postId}) ON CONFLICT DO NOTHING`;
   }
-  revalidatePath("/feed");
+  revalidatePath("/", "layout");
 }
 
 export async function toggleSave(formData) {
@@ -31,7 +31,7 @@ export async function toggleSave(formData) {
   if (removed.length === 0) {
     await sql`INSERT INTO saves (user_id, post_id) VALUES (${user.id}, ${postId}) ON CONFLICT DO NOTHING`;
   }
-  revalidatePath("/feed");
+  revalidatePath("/", "layout");
 }
 
 export async function toggleFollow(formData) {
@@ -47,5 +47,5 @@ export async function toggleFollow(formData) {
       SELECT ${user.id}, id FROM users WHERE id = ${businessId} AND role = 'business'
       ON CONFLICT DO NOTHING`;
   }
-  revalidatePath("/feed");
+  revalidatePath("/", "layout");
 }
