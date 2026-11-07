@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { startCheckout } from "@/app/actions/billing";
 import SpecialsAssistant from "@/app/components/SpecialsAssistant";
 import TopBar from "@/app/components/TopBar";
 import { getCurrentUser } from "@/lib/auth";
@@ -25,6 +26,9 @@ export default async function DashboardPage() {
           <div className="card assistant">
             <h2>AI specials assistant</h2>
             <p className="muted">Upgrade to Pro to turn a rough note into a finished post in seconds.</p>
+            <form action={startCheckout} className="upgrade">
+              <button className="button primary" type="submit">Upgrade to Pro: $35/month</button>
+            </form>
           </div>
         )}
       </main>

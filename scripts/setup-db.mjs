@@ -22,6 +22,9 @@ await sql`
     expires_at TIMESTAMPTZ NOT NULL
   )`;
 
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT`;
+
 // The class demo account: always exists, always Pro, password is reset on every run.
 const demoHash = await bcrypt.hash("password123!", 10);
 await sql`

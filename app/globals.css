@@ -122,6 +122,8 @@ h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--nav
 }
 .assistant .error { margin-bottom: 12px; }
 .assistant .button:disabled { opacity: 0.6; cursor: default; }
+.upgrade { margin-top: 16px; }
+.backlink { margin-top: 20px; }
 .result { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
 .result h3 { color: var(--navy); margin-bottom: 2px; }
 .result h4 { color: var(--navy); font-size: 0.95rem; margin-top: 14px; }
