@@ -88,6 +88,30 @@ h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--nav
 .card li::before { content: "\2713"; color: var(--blue); font-weight: 700; margin-right: 8px; }
 .card.featured { border: 2px solid var(--blue); }
 
+/* Sign up and log in */
+.authpage { background: var(--light); min-height: calc(100vh - 70px); padding: 48px 20px; }
+.authcard { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.authcard h1 { color: var(--navy); font-size: 1.5rem; }
+.authcard label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 0.95rem; }
+.authcard input {
+  padding: 12px; border: 1px solid #c5cedb; border-radius: 8px;
+  font-size: 1rem; font-family: inherit;
+}
+.authcard .button:disabled { opacity: 0.6; cursor: default; }
+.error { color: #b3261e; font-size: 0.95rem; }
+.switch { font-size: 0.95rem; text-align: center; }
+.switch a { color: var(--blue); }
+
+/* Logged-in pages */
+.linkbutton {
+  background: none; border: none; color: inherit; font: inherit;
+  cursor: pointer; padding: 0;
+}
+.linkbutton:hover { text-decoration: underline; }
+.dashboard { padding-top: 40px; padding-bottom: 40px; }
+.dashboard h1 { color: var(--navy); font-size: 1.8rem; }
+.muted { color: var(--muted); }
+
 footer { background: var(--navy); color: var(--white); text-align: center; padding: 28px 0; font-size: 0.95rem; }
 footer p + p { opacity: 0.75; margin-top: 4px; font-size: 0.85rem; }
 
