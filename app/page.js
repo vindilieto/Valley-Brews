@@ -7,6 +7,7 @@ export default function Home() {
         <div className="container">
           <Link href="/" className="logo">Valley Brews</Link>
           <nav className="nav">
+            <Link href="/feed">Feed</Link>
             <Link href="/login">Log in</Link>
             <Link href="/signup">Sign up</Link>
           </nav>
@@ -20,8 +21,12 @@ export default function Home() {
             Valley Brews is one weekly feed of specials, events, and promos from local bars,
             restaurants, shops, and hotels, posted by the businesses themselves.
           </p>
-          <Link href="/signup" className="button">List your business for free</Link>
-          <span className="note">Always free for students and visitors.</span>
+          <Link href="/feed" className="button">See what's on this week</Link>
+          <Link href="/signup" className="button outline">List your business for free</Link>
+          <span className="note">
+            Always free for students and visitors. <Link href="/signup?type=customer">Sign up</Link> to like,
+            save, and follow your favorite spots.
+          </span>
         </div>
       </div>
 
@@ -38,7 +43,10 @@ export default function Home() {
             <div className="card">
               <div className="step">2</div>
               <h3>Students and visitors browse</h3>
-              <p>Everyone sees one free weekly feed. Filter by specials, events, food, or game day.</p>
+              <p>
+                Everyone sees one free weekly feed. Like posts, save the ones you want to go to, and follow
+                your favorite spots for a feed made for you.
+              </p>
             </div>
             <div className="card">
               <div className="step">3</div>

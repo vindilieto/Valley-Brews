@@ -7,9 +7,10 @@ export default function TopBar({ user }) {
       <div className="container">
         <Link href="/" className="logo">Valley Brews</Link>
         <nav className="nav">
+          <Link href="/feed">Feed</Link>
           {user ? (
             <>
-              <Link href="/dashboard">Dashboard</Link>
+              {user.role === "business" && <Link href="/dashboard">Dashboard</Link>}
               <form action={logout}>
                 <button type="submit" className="linkbutton">Log out</button>
               </form>

@@ -1,18 +1,44 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { login, signup } from "@/app/actions/auth";
 
-export default function AuthForm({ mode }) {
+export default function AuthForm({ mode, startingRole = "business" }) {
   const isSignup = mode === "signup";
   const [state, action, pending] = useActionState(isSignup ? signup : login, undefined);
+  const [role, setRole] = useState(startingRole);
 
   return (
     <form action={action} className="card authcard">
       <h1>{isSignup ? "Create your account" : "Log in"}</h1>
 
       {isSignup && (
+        <fieldset className="rolepick">
+          <legend>I'm signing up as</legend>
+          <label>
+            <input
+              type="radio"
+              name="role"
+              value="customer"
+              checked={role === "customer"}
+              onChange={() => setRole("customer")}
+            />
+            A student or visitor
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="role"
+              value="business"
+              checked={role === "business"}
+              onChange={() => setRole("business")}
+            />
+            A business
+          </label>
+        </fieldset>
+      )}
+      {isSignup && role === "business" && (
         <label>
           Business name
           <input name="businessName" type="text" autoComplete="organization" required />

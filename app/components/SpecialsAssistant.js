@@ -2,35 +2,11 @@
 
 import { useActionState } from "react";
 import { generatePost } from "@/app/actions/assistant";
+import PostForm from "@/app/components/PostForm";
 
-function formatTime(time) {
-  if (!time) return "";
-  if (time === "close") return "close";
-  const [hours, minutes] = time.split(":").map(Number);
-  const suffix = hours >= 12 ? "PM" : "AM";
-  const hour = hours % 12 || 12;
-  return minutes ? `${hour}:${String(minutes).padStart(2, "0")} ${suffix}` : `${hour} ${suffix}`;
-}
-
-function formatTimes(start, end) {
-  if (start && end) return `${formatTime(start)} to ${formatTime(end)}`;
-  if (end) return `until ${formatTime(end)}`;
-  return formatTime(start);
-}
-
-function formatDate(date) {
-  // Noon keeps the date from slipping a day in other time zones.
-  return new Date(`${date}T12:00:00`).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-export default function SpecialsAssistant() {
+export default function SpecialsAssistant({ today }) {
   const [state, action, pending] = useActionState(generatePost, undefined);
   const post = state?.post;
-  const times = post ? formatTimes(post.start_time, post.end_time) : "";
 
   return (
     <div className="card assistant">
@@ -53,12 +29,9 @@ export default function SpecialsAssistant() {
 
       {post && (
         <div className="result">
-          <h3>{post.title}</h3>
-          <p className="muted">
-            {formatDate(post.date)}{times && ` · ${times}`} · {post.category}
-            {post.is_21_plus && " · 21+"}
-          </p>
-          <p>{post.description}</p>
+          <h3>Check the details, then post it</h3>
+          <p className="muted">The AI can guess dates wrong, so make sure everything looks right.</p>
+          <PostForm key={JSON.stringify(post)} initial={post} today={today} />
           <h4>Instagram caption</h4>
           <p>{post.instagram_caption}</p>
           <h4>Text message</h4>
