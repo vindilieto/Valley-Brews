@@ -54,12 +54,12 @@ export default async function UpgradeSuccessPage({ searchParams }) {
         <h1>{paid ? `You're on ${planName(plan)}!` : "We couldn't confirm your payment"}</h1>
         <p className="muted">
           {!paid
-            ? "Nothing on your account was changed. Please try again from your dashboard."
+            ? "Nothing on your account was changed. Please try again from your Posts page."
             : hasAI(plan)
-              ? "The AI specials assistant and repeating posts are ready on your dashboard."
-              : "Unlimited and repeating posts are ready on your dashboard."}
+              ? "The AI specials assistant and repeating posts are ready on your Posts page."
+              : "Unlimited and repeating posts are ready on your Posts page."}
         </p>
-        <p><Link href="/dashboard" className="button primary backlink">Go to dashboard</Link></p>
+        <p><Link href="/dashboard" className="button primary backlink">Go to my posts</Link></p>
       </main>
     </>
   );

@@ -11,7 +11,7 @@ import { sql } from "@/lib/db";
 import { formatDate, formatRepeat, formatTimes, FREE_POST_LIMIT, todayInStateCollege } from "@/lib/format";
 import { hasAI, hasPaidPlan, isUpgrade, PAID_PLANS, planName } from "@/lib/plans";
 
-export const metadata = { title: "Dashboard | Valley Brews" };
+export const metadata = { title: "Posts | Valley Brews" };
 
 function UpgradeButton({ plan, label }) {
   return (

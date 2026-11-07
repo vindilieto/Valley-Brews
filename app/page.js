@@ -7,7 +7,7 @@ export default function Home() {
         <div className="container">
           <Link href="/" className="logo">Valley Brews</Link>
           <nav className="nav">
-            <Link href="/feed">Feed</Link>
+            <Link href="/feed">Home</Link>
             <Link href="/login">Log in</Link>
             <Link href="/signup">Sign up</Link>
           </nav>

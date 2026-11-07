@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { addDays, CATEGORIES, formatDate, todayInStateCollege } from "@/lib/format";
 
-export const metadata = { title: "This week | Valley Brews" };
+export const metadata = { title: "Home | Valley Brews" };
 
 const VIEWS = [
   { id: "all", label: "Everything" },

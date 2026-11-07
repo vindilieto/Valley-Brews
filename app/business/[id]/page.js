@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { toggleFollow } from "@/app/actions/feed";
 import PostCard, { Logo } from "@/app/components/PostCard";
@@ -56,6 +57,9 @@ export default async function BusinessPage({ params }) {
               {business.followers} {business.followers === 1 ? "follower" : "followers"} &middot; {posts.length}{" "}
               {posts.length === 1 ? "post" : "posts"}
             </p>
+            {user?.id === business.id && (
+              <Link href="/dashboard#page" className="pill">Edit my page</Link>
+            )}
             {isCustomer && (
               <form action={toggleFollow}>
                 <input type="hidden" name="businessId" value={business.id} />
