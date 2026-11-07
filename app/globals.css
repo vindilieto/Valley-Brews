@@ -112,6 +112,20 @@ h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--nav
 .dashboard h1 { color: var(--navy); font-size: 1.8rem; }
 .muted { color: var(--muted); }
 
+/* AI specials assistant */
+.assistant { margin-top: 24px; max-width: 640px; }
+.assistant h2 { text-align: left; font-size: 1.3rem; margin-bottom: 12px; }
+.assistant label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+.assistant textarea {
+  width: 100%; padding: 12px; border: 1px solid #c5cedb; border-radius: 8px;
+  font-size: 1rem; font-family: inherit; margin-bottom: 12px; resize: vertical;
+}
+.assistant .error { margin-bottom: 12px; }
+.assistant .button:disabled { opacity: 0.6; cursor: default; }
+.result { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+.result h3 { color: var(--navy); margin-bottom: 2px; }
+.result h4 { color: var(--navy); font-size: 0.95rem; margin-top: 14px; }
+
 footer { background: var(--navy); color: var(--white); text-align: center; padding: 28px 0; font-size: 0.95rem; }
 footer p + p { opacity: 0.75; margin-top: 4px; font-size: 0.85rem; }
 
