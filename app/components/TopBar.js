@@ -5,7 +5,8 @@ export default function TopBar({ user }) {
   return (
     <header className="topbar">
       <div className="container">
-        <Link href="/" className="logo">Valley Brews</Link>
+        {/* Signed-in people go straight to the feed; everyone else sees the homepage. */}
+        <Link href={user ? "/feed" : "/"} className="logo">Valley Brews</Link>
         <nav className="nav">
           <Link href="/feed">Home</Link>
           {user ? (

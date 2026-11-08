@@ -1,18 +1,13 @@
 import Link from "next/link";
+import TopBar from "@/app/components/TopBar";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <>
-      <header className="topbar">
-        <div className="container">
-          <Link href="/" className="logo">Valley Brews</Link>
-          <nav className="nav">
-            <Link href="/feed">Home</Link>
-            <Link href="/login">Log in</Link>
-            <Link href="/signup">Sign up</Link>
-          </nav>
-        </div>
-      </header>
+      <TopBar user={user} />
 
       <div className="hero">
         <div className="container">
