@@ -24,7 +24,7 @@ export default function AuthForm({ mode, startingRole = "business" }) {
               checked={role === "customer"}
               onChange={() => setRole("customer")}
             />
-            Personal (browse, like, save, and follow)
+            Personal account
           </label>
           <label>
             <input
@@ -34,7 +34,7 @@ export default function AuthForm({ mode, startingRole = "business" }) {
               checked={role === "business"}
               onChange={() => setRole("business")}
             />
-            Business (post your specials and events)
+            Business account
           </label>
         </fieldset>
       )}

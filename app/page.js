@@ -42,7 +42,7 @@ export default function Home() {
             </div>
             <div className="card">
               <div className="step">2</div>
-              <h3>Students and visitors browse</h3>
+              <h3>Locals, students, and visitors browse</h3>
               <p>
                 Everyone sees one free weekly feed. Like posts, save the ones you want to go to, and follow
                 your favorite spots for a feed made for you.
