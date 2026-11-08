@@ -10,6 +10,7 @@ export default function TopBar({ user }) {
           <Link href="/feed">Home</Link>
           {user ? (
             <>
+              {user.role === "customer" && <Link href="/feed?view=following">Following</Link>}
               {user.role === "business" && (
                 <>
                   <Link href="/dashboard">Posts</Link>

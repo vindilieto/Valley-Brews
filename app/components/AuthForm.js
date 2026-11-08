@@ -15,7 +15,7 @@ export default function AuthForm({ mode, startingRole = "business" }) {
 
       {isSignup && (
         <fieldset className="rolepick">
-          <legend>I'm signing up as</legend>
+          <legend>Account type</legend>
           <label>
             <input
               type="radio"
@@ -24,7 +24,7 @@ export default function AuthForm({ mode, startingRole = "business" }) {
               checked={role === "customer"}
               onChange={() => setRole("customer")}
             />
-            A student or visitor
+            Personal (browse, like, save, and follow)
           </label>
           <label>
             <input
@@ -34,7 +34,7 @@ export default function AuthForm({ mode, startingRole = "business" }) {
               checked={role === "business"}
               onChange={() => setRole("business")}
             />
-            A business
+            Business (post your specials and events)
           </label>
         </fieldset>
       )}

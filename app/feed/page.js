@@ -5,7 +5,10 @@ import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { addDays, CATEGORIES, formatDate, todayInStateCollege } from "@/lib/format";
 
-export const metadata = { title: "Home | Valley Brews" };
+export async function generateMetadata({ searchParams }) {
+  const { view } = await searchParams;
+  return { title: view === "following" ? "Following | Valley Brews" : "Home | Valley Brews" };
+}
 
 const VIEWS = [
   { id: "all", label: "Everything" },
@@ -75,14 +78,23 @@ export default async function FeedPage({ searchParams }) {
     <>
       <TopBar user={user} />
       <main className="container feed">
-        <h1>This week in State College</h1>
-        <p className="muted">Specials and events, posted by the businesses themselves.</p>
+        {view === "following" ? (
+          <>
+            <h1>Places you follow</h1>
+            <p className="muted">This week's specials and events from the businesses you follow.</p>
+          </>
+        ) : (
+          <>
+            <h1>This week in State College</h1>
+            <p className="muted">Specials and events, posted by the businesses themselves.</p>
+          </>
+        )}
 
         {!user && (
           <div className="card joinbox">
             <p>
-              <strong>Make this feed yours.</strong> Sign up free to like posts, save the ones you want to go to,
-              and follow your favorite spots.
+              <strong>Make this feed yours.</strong> Sign up for a free personal account to like posts, save the
+              ones you want to go to, and follow your favorite spots.
             </p>
             <Link href="/signup?type=customer" className="button primary">Sign up free</Link>
           </div>

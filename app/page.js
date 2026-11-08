@@ -24,8 +24,8 @@ export default function Home() {
           <Link href="/feed" className="button">See what's on this week</Link>
           <Link href="/signup" className="button outline">List your business for free</Link>
           <span className="note">
-            Always free for students and visitors. <Link href="/signup?type=customer">Sign up</Link> to like,
-            save, and follow your favorite spots.
+            Always free to browse. <Link href="/signup?type=customer">Make a free personal account</Link> to
+            like, save, and follow your favorite spots.
           </span>
         </div>
       </div>

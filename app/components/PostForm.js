@@ -92,7 +92,7 @@ export default function PostForm({ initial = {}, today, canRepeat }) {
         <input name="is21Plus" type="checkbox" defaultChecked={initial.is_21_plus} />
         21+ only
       </label>
-      <label className="switch">
+      <label className="toggle">
         <input name="isPublic" type="checkbox" defaultChecked={initial.is_public ?? true} />
         <span className="slider" aria-hidden="true" />
         Show on the feed

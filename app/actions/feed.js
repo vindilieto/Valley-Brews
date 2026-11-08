@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 
-// Likes, saves, and follows are for student and visitor accounts only.
+// Likes, saves, and follows are for personal accounts only (role 'customer' in the database).
 async function getCustomer() {
   const user = await getCurrentUser();
   return user?.role === "customer" ? user : null;

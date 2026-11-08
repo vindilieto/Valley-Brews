@@ -126,7 +126,7 @@ export default async function DashboardPage() {
                       <input type="hidden" name="postId" value={post.id} />
                       <button
                         type="submit"
-                        className="switch"
+                        className="toggle"
                         role="switch"
                         aria-checked={post.is_public}
                         aria-label={post.is_public ? "Shown on the feed. Click to hide." : "Hidden. Click to show."}
@@ -149,7 +149,7 @@ export default async function DashboardPage() {
 
         <div className="card assistant" id="page">
           <h2>Your business page</h2>
-          <p className="muted">This is what students see when they tap your name on the feed.</p>
+          <p className="muted">This is what people see when they tap your name on the feed.</p>
           <ProfileForm business={business} />
         </div>
       </main>
