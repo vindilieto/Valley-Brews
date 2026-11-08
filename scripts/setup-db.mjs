@@ -75,6 +75,8 @@ await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS logo_url TEXT NOT NULL DEFA
 // An empty list means a one-time post on post_date.
 await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS repeat_days INTEGER[] NOT NULL DEFAULT '{}'`;
 await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS image_url TEXT NOT NULL DEFAULT ''`;
+// Hidden posts stay on the business's Posts page but don't show on the feed or their page.
+await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT true`;
 
 // The class demo account: always exists, always Pro, password is reset on every run.
 const demoHash = await bcrypt.hash("password123!", 10);

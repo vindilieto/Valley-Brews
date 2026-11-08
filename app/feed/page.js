@@ -56,7 +56,8 @@ export default async function FeedPage({ searchParams }) {
       OR (cardinality(posts.repeat_days) > 0 AND posts.post_date <= days.day AND days.day <= ${weekEnd}::date
           AND extract(dow FROM days.day)::int = ANY(posts.repeat_days))
     )
-    WHERE (${category} = '' OR posts.category = ${category})
+    WHERE posts.is_public
+      AND (${category} = '' OR posts.category = ${category})
       AND (${view} <> 'following' OR EXISTS (
             SELECT 1 FROM follows WHERE follows.business_id = posts.business_id AND follows.user_id = ${userId}))
       AND (${view} <> 'saved' OR EXISTS (

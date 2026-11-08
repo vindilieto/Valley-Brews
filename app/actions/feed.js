@@ -17,7 +17,10 @@ export async function toggleLike(formData) {
 
   const removed = await sql`DELETE FROM likes WHERE user_id = ${user.id} AND post_id = ${postId} RETURNING post_id`;
   if (removed.length === 0) {
-    await sql`INSERT INTO likes (user_id, post_id) VALUES (${user.id}, ${postId}) ON CONFLICT DO NOTHING`;
+    await sql`
+      INSERT INTO likes (user_id, post_id)
+      SELECT ${user.id}, id FROM posts WHERE id = ${postId} AND is_public
+      ON CONFLICT DO NOTHING`;
   }
   revalidatePath("/", "layout");
 }
@@ -29,7 +32,10 @@ export async function toggleSave(formData) {
 
   const removed = await sql`DELETE FROM saves WHERE user_id = ${user.id} AND post_id = ${postId} RETURNING post_id`;
   if (removed.length === 0) {
-    await sql`INSERT INTO saves (user_id, post_id) VALUES (${user.id}, ${postId}) ON CONFLICT DO NOTHING`;
+    await sql`
+      INSERT INTO saves (user_id, post_id)
+      SELECT ${user.id}, id FROM posts WHERE id = ${postId} AND is_public
+      ON CONFLICT DO NOTHING`;
   }
   revalidatePath("/", "layout");
 }

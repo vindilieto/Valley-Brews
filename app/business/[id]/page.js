@@ -38,7 +38,7 @@ export default async function BusinessPage({ params }) {
            EXISTS (SELECT 1 FROM likes WHERE likes.post_id = posts.id AND likes.user_id = ${userId}) AS liked,
            EXISTS (SELECT 1 FROM saves WHERE saves.post_id = posts.id AND saves.user_id = ${userId}) AS saved
     FROM posts
-    WHERE business_id = ${business.id}
+    WHERE business_id = ${business.id} AND is_public
       AND (cardinality(repeat_days) > 0 OR post_date >= ${todayInStateCollege()})
     ORDER BY cardinality(repeat_days) = 0, post_date, start_time`;
 

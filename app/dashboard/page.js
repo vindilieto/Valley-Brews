@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { startCheckout } from "@/app/actions/billing";
-import { deletePost } from "@/app/actions/posts";
+import { deletePost, togglePostVisibility } from "@/app/actions/posts";
 import PostForm from "@/app/components/PostForm";
 import ProfileForm from "@/app/components/ProfileForm";
 import SpecialsAssistant from "@/app/components/SpecialsAssistant";
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
     FROM users WHERE id = ${user.id}`;
   const posts = await sql`
     SELECT posts.id, posts.title, posts.category, posts.start_time, posts.end_time, posts.is_21_plus,
-           posts.repeat_days, posts.image_url,
+           posts.repeat_days, posts.image_url, posts.is_public,
            to_char(posts.post_date, 'YYYY-MM-DD') AS date,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,
            (SELECT count(*)::int FROM saves WHERE saves.post_id = posts.id) AS saves
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
 
         <div className="card assistant">
           <h2>Your posts</h2>
-          {posts.length === 0 && <p className="muted">Nothing posted yet. Your posts will show here and on the feed.</p>}
+          {posts.length === 0 && <p className="muted">Nothing posted yet. Your posts will show here, and on the feed unless you hide them.</p>}
           <ul className="mylist">
             {posts.map((post) => {
               const times = formatTimes(post.start_time, post.end_time);
@@ -110,6 +110,7 @@ export default async function DashboardPage() {
                   {post.image_url && <img src={post.image_url} alt="" className="thumb" />}
                   <div className="grow">
                     <strong>{post.title}</strong>
+                    {!post.is_public && <span className="badge hidden">Hidden</span>}
                     <p className="muted">
                       {formatRepeat(post.repeat_days) || formatDate(post.date)}
                       {times && ` · ${times}`}
@@ -120,10 +121,26 @@ export default async function DashboardPage() {
                       {post.saves === 1 ? "save" : "saves"}
                     </p>
                   </div>
-                  <form action={deletePost}>
-                    <input type="hidden" name="postId" value={post.id} />
-                    <button type="submit" className="linkbutton danger">Delete</button>
-                  </form>
+                  <div className="postcontrols">
+                    <form action={togglePostVisibility}>
+                      <input type="hidden" name="postId" value={post.id} />
+                      <button
+                        type="submit"
+                        className="switch"
+                        role="switch"
+                        aria-checked={post.is_public}
+                        aria-label={post.is_public ? "Shown on the feed. Click to hide." : "Hidden. Click to show."}
+                      >
+                        <span className="slider" aria-hidden="true" />
+                        {post.is_public ? "Shown" : "Hidden"}
+                      </button>
+                    </form>
+                    <Link href={`/dashboard/edit/${post.id}`}>Edit</Link>
+                    <form action={deletePost}>
+                      <input type="hidden" name="postId" value={post.id} />
+                      <button type="submit" className="linkbutton danger">Delete</button>
+                    </form>
+                  </div>
                 </li>
               );
             })}

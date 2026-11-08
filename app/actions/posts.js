@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { CATEGORIES, FREE_POST_LIMIT, todayInStateCollege } from "@/lib/format";
@@ -24,6 +25,19 @@ export async function savePost(previousState, formData) {
   const repeatDays = [...new Set(formData.getAll("repeatDays").map(Number))]
     .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6);
   const image = getImage(formData, "image");
+  const removeImage = Boolean(formData.get("removeImage"));
+  const isPublic = Boolean(formData.get("isPublic"));
+  const today = todayInStateCollege();
+
+  // Editing an existing post? Make sure it belongs to this business.
+  const postId = Number(formData.get("postId")) || 0;
+  let existing = null;
+  if (postId) {
+    [existing] = await sql`
+      SELECT to_char(post_date, 'YYYY-MM-DD') AS date, image_url FROM posts
+      WHERE id = ${postId} AND business_id = ${user.id}`;
+    if (!existing) return { error: "We couldn't find that post." };
+  }
 
   if (!title || title.length > 100) return { error: "Please give your post a title (100 characters max)." };
   if (!description || description.length > 1000) {
@@ -31,7 +45,8 @@ export async function savePost(previousState, formData) {
   }
   if (!CATEGORIES.includes(category)) return { error: "Please pick a category." };
   if (!DATE_PATTERN.test(date)) return { error: "Please pick a date." };
-  if (date < todayInStateCollege()) return { error: "That date has already passed." };
+  // An edited post can keep its original date (a weekly special may have started weeks ago).
+  if (date < today && date !== existing?.date) return { error: "That date has already passed." };
   if (startTime && !TIME_PATTERN.test(startTime)) return { error: "Please check the start time." };
   if (endTime && endTime !== "close" && !TIME_PATTERN.test(endTime)) {
     return { error: "Please check the end time." };
@@ -44,16 +59,17 @@ export async function savePost(previousState, formData) {
     if (imageError) return { error: imageError };
   }
 
-  if (!hasPaidPlan(user.plan)) {
+  if (!existing && !hasPaidPlan(user.plan)) {
     const [{ upcoming }] = await sql`
       SELECT count(*)::int AS upcoming FROM posts
-      WHERE business_id = ${user.id} AND post_date >= ${todayInStateCollege()}`;
+      WHERE business_id = ${user.id} AND post_date >= ${today}`;
     if (upcoming >= FREE_POST_LIMIT) {
       return { error: `Free accounts can have ${FREE_POST_LIMIT} upcoming posts. Upgrade to Plus for unlimited posts.` };
     }
   }
 
-  let imageUrl = "";
+  // Keep the old photo unless a new one was picked or "Remove photo" was ticked.
+  let imageUrl = removeImage ? "" : (existing?.image_url ?? "");
   if (image) {
     try {
       imageUrl = await uploadImage(image, "posts");
@@ -63,14 +79,37 @@ export async function savePost(previousState, formData) {
     }
   }
 
+  if (existing) {
+    await sql`
+      UPDATE posts SET title = ${title}, description = ${description}, category = ${category},
+             post_date = ${date}, start_time = ${startTime}, end_time = ${endTime}, is_21_plus = ${is21Plus},
+             repeat_days = ${repeatDays}, image_url = ${imageUrl}, is_public = ${isPublic}
+      WHERE id = ${postId} AND business_id = ${user.id}`;
+    if (existing.image_url !== imageUrl) await deleteImage(existing.image_url);
+    revalidatePath("/", "layout");
+    redirect("/dashboard");
+  }
+
   await sql`
     INSERT INTO posts (business_id, title, description, category, post_date, start_time, end_time,
-                       is_21_plus, repeat_days, image_url)
+                       is_21_plus, repeat_days, image_url, is_public)
     VALUES (${user.id}, ${title}, ${description}, ${category}, ${date}, ${startTime}, ${endTime},
-            ${is21Plus}, ${repeatDays}, ${imageUrl})`;
+            ${is21Plus}, ${repeatDays}, ${imageUrl}, ${isPublic})`;
 
   revalidatePath("/", "layout");
-  return { saved: true, savedAt: Date.now() };
+  return { saved: true, savedAt: Date.now(), isPublic };
+}
+
+// The Show/Hide switch on the Posts page.
+export async function togglePostVisibility(formData) {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  await sql`
+    UPDATE posts SET is_public = NOT is_public
+    WHERE id = ${Number(formData.get("postId"))} AND business_id = ${user.id}`;
+
+  revalidatePath("/", "layout");
 }
 
 export async function deletePost(formData) {
