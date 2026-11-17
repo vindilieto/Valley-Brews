@@ -2,12 +2,18 @@ import Link from "next/link";
 import TopBar from "@/app/components/TopBar";
 import { getCurrentUser } from "@/lib/auth";
 
-export default async function Home() {
+export default async function Home({ searchParams }) {
   const user = await getCurrentUser();
+  const { deleted } = await searchParams;
 
   return (
     <>
       <TopBar user={user} />
+      {deleted && (
+        <div className="container">
+          <p className="notice" role="status">Your account was deleted. Thanks for trying Valley Brews.</p>
+        </div>
+      )}
 
       <div className="hero">
         <div className="container">

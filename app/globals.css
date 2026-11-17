@@ -166,6 +166,14 @@ h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--nav
 .mylist li:first-child { border-top: none; }
 .card .mylist li::before { content: none; }
 .linkbutton.danger { color: #b3261e; }
+/* Delete account */
+.button.danger { background: #b3261e; color: #fff; border: none; align-self: flex-start; cursor: pointer; }
+.button.danger:disabled { opacity: 0.6; cursor: default; }
+.card .deletelist { list-style: disc; margin: 8px 0 16px 20px; }
+.card .deletelist li { color: var(--text); }
+.card .deletelist li::before { content: none; }
+.deletelink { margin-top: 32px; font-size: 0.9rem; }
+.deletelink a { color: #b3261e; }
 /* Posts tab: your posts, with New Post and AI Assistant buttons that stay in view while you scroll */
 .postslayout { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 24px; align-items: start; }
 .postslayout .assistant { max-width: none; }

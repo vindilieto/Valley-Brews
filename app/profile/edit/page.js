@@ -27,6 +27,9 @@ export default async function EditProfilePage() {
           <p className="muted">This is what people see when they tap your name on the feed.</p>
           <ProfileForm business={business} />
         </div>
+        <p className="deletelink">
+          <Link href="/account/delete">Delete my account</Link>
+        </p>
       </main>
     </>
   );

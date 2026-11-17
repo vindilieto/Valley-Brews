@@ -164,6 +164,12 @@ export default async function FeedPage({ searchParams }) {
             ))}
           </section>
         ))}
+
+        {isCustomer && (
+          <p className="deletelink">
+            <Link href="/account/delete">Delete my account</Link>
+          </p>
+        )}
       </main>
     </>
   );
