@@ -90,7 +90,7 @@ export async function savePost(previousState, formData) {
       WHERE id = ${postId} AND business_id = ${user.id}`;
     if (existing.image_url !== imageUrl) await deleteImage(existing.image_url);
     revalidatePath("/", "layout");
-    redirect("/dashboard");
+    redirect("/dashboard?saved=edited");
   }
 
   await sql`
@@ -99,8 +99,9 @@ export async function savePost(previousState, formData) {
     VALUES (${user.id}, ${title}, ${description}, ${categories}, ${date}, ${startTime}, ${endTime},
             ${is21Plus}, ${repeatDays}, ${imageUrl}, ${imageUrl ? imageCrop : ""}, ${isPublic})`;
 
+  // Back to the Posts page, which shows a "Posted!" note at the top.
   revalidatePath("/", "layout");
-  return { saved: true, savedAt: Date.now(), isPublic };
+  redirect(isPublic ? "/dashboard?saved=posted" : "/dashboard?saved=hidden");
 }
 
 // The Show/Hide switch on the Posts page.

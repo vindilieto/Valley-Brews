@@ -29,13 +29,14 @@ export default function SpecialsAssistant({ today }) {
 
       {post && (
         <div className="result">
-          <h3>Check the details, then post it</h3>
-          <p className="muted">The AI can guess dates wrong, so make sure everything looks right.</p>
-          <PostForm key={JSON.stringify(post)} initial={post} today={today} canRepeat />
+          {/* Shown first, so they can be copied before posting takes you back to your posts. */}
           <h4>Instagram caption</h4>
           <p>{post.instagram_caption}</p>
           <h4>Text message</h4>
           <p>{post.text_message}</p>
+          <h3 className="checkpost">Check the details, then post it</h3>
+          <p className="muted">The AI can guess dates wrong, so make sure everything looks right.</p>
+          <PostForm key={JSON.stringify(post)} initial={post} today={today} canRepeat />
         </div>
       )}
     </div>

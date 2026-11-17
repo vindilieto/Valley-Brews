@@ -153,6 +153,11 @@ h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; color: var(--nav
 .postform label.check { flex-direction: row; align-items: center; gap: 8px; font-weight: 400; }
 .postform .error { margin: 0; }
 .success { color: #1b6b3a; font-size: 0.95rem; }
+.notice {
+  margin-top: 16px; padding: 10px 14px; border-radius: 10px;
+  background: #e7f4ec; color: #1b6b3a; font-weight: 600;
+}
+.result .checkpost { margin-top: 20px; }
 .mylist { list-style: none; }
 .mylist li {
   display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;

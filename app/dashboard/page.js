@@ -11,9 +11,16 @@ import { hasAI, hasPaidPlan, planName } from "@/lib/plans";
 
 export const metadata = { title: "Posts | Valley Brews" };
 
+// Shown at the top after saving a post (the form sends you here with ?saved=...).
+const SAVED_MESSAGES = {
+  posted: "Posted! It's on the feed now.",
+  hidden: "Saved as hidden. Only you can see it until you switch it to Shown.",
+  edited: "Changes saved.",
+};
+
 // The Posts tab: manage the posts you've made. New Post and AI Assistant open their own pages.
 export default async function DashboardPage({ searchParams }) {
-  const { checkout } = await searchParams;
+  const { checkout, saved } = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "business") redirect("/feed");
@@ -46,6 +53,8 @@ export default async function DashboardPage({ searchParams }) {
           {followers === 1 ? "follower" : "followers"} &middot;{" "}
           <Link href={`/business/${user.id}`}>View my page</Link>
         </p>
+
+        {SAVED_MESSAGES[saved] && <p className="notice" role="status">{SAVED_MESSAGES[saved]}</p>}
 
         {checkout === "failed" && (
           <p className="error" role="alert">

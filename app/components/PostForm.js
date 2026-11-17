@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { savePost } from "@/app/actions/posts";
 import PhotoInput from "@/app/components/PhotoInput";
@@ -28,9 +27,7 @@ export default function PostForm({ initial = {}, today, canRepeat }) {
         Description
         <textarea name="description" rows={3} maxLength={1000} defaultValue={initial.description} required />
       </label>
-      {/* A new key after each post clears the old photo preview. */}
       <PhotoInput
-        key={state?.savedAt ?? 0}
         name="image"
         label="Photo (optional)"
         current={initial.image_url}
@@ -115,12 +112,6 @@ export default function PostForm({ initial = {}, today, canRepeat }) {
       </label>
 
       {state?.error && <p className="error" role="alert">{state.error}</p>}
-      {state?.saved && (
-        <p className="success" role="status">
-          {state.isPublic ? "Posted! It's on the feed now." : "Saved as hidden. Only you can see it on your Posts page."}{" "}
-          <Link href="/dashboard">See it in my posts</Link>
-        </p>
-      )}
 
       <button className="button primary" type="submit" disabled={pending}>
         {pending ? "Saving..." : editing ? "Save changes" : "Post it"}
