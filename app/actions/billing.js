@@ -18,25 +18,31 @@ export async function startCheckout(formData) {
   const protocol = headerList.get("x-forwarded-proto") ?? "http";
   const siteUrl = `${protocol}://${headerList.get("host")}`;
 
-  const session = await getStripe().checkout.sessions.create({
-    mode: "subscription",
-    customer_email: user.email,
-    client_reference_id: String(user.id),
-    metadata: { plan },
-    line_items: [
-      {
-        quantity: 1,
-        price_data: {
-          currency: "usd",
-          unit_amount: PAID_PLANS[plan].cents,
-          recurring: { interval: "month" },
-          product_data: { name: `Valley Brews ${PAID_PLANS[plan].name}` },
+  // If Stripe can't be reached (or the key is missing), go back with a message instead of an error page.
+  let session;
+  try {
+    session = await getStripe().checkout.sessions.create({
+      mode: "subscription",
+      customer_email: user.email,
+      client_reference_id: String(user.id),
+      metadata: { plan },
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "usd",
+            unit_amount: PAID_PLANS[plan].cents,
+            recurring: { interval: "month" },
+            product_data: { name: `Valley Brews ${PAID_PLANS[plan].name}` },
+          },
         },
-      },
-    ],
-    success_url: `${siteUrl}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteUrl}/dashboard`,
-  });
+      ],
+      success_url: `${siteUrl}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}/dashboard`,
+    });
+  } catch (error) {
+    console.error("Couldn't start checkout:", error.message);
+  }
 
-  redirect(session.url);
+  redirect(session?.url ?? "/dashboard?checkout=failed");
 }

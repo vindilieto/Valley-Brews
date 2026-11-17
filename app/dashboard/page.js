@@ -24,7 +24,8 @@ function UpgradeButton({ plan, label }) {
   );
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }) {
+  const { checkout } = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "business") redirect("/feed");
@@ -58,6 +59,12 @@ export default async function DashboardPage() {
           {followers === 1 ? "follower" : "followers"} &middot;{" "}
           <Link href={`/business/${user.id}`}>View my page</Link>
         </p>
+
+        {checkout === "failed" && (
+          <p className="error" role="alert">
+            Payment couldn't start, so nothing was charged. Please try again in a minute.
+          </p>
+        )}
 
         {!canRepeat && (
           <div className="card assistant">
