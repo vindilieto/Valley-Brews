@@ -45,8 +45,8 @@ export default async function FeedPage({ searchParams }) {
     )
     SELECT posts.id, posts.business_id, posts.title, posts.description, posts.category,
            posts.start_time, posts.end_time, posts.is_21_plus, posts.repeat_days, posts.image_url,
-           to_char(days.day, 'YYYY-MM-DD') AS date,
-           users.business_name, users.logo_url,
+           posts.image_crop, to_char(days.day, 'YYYY-MM-DD') AS date,
+           users.business_name, users.logo_url, users.logo_crop,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,
            EXISTS (SELECT 1 FROM likes WHERE likes.post_id = posts.id AND likes.user_id = ${userId}) AS liked,
            EXISTS (SELECT 1 FROM saves WHERE saves.post_id = posts.id AND saves.user_id = ${userId}) AS saved,

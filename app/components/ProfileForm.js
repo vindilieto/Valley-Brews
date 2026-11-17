@@ -4,20 +4,36 @@ import { useActionState } from "react";
 import { saveProfile } from "@/app/actions/profile";
 import PhotoInput from "@/app/components/PhotoInput";
 
-// The form for a business's public page: logo, bio, address, hours, and menu link.
+// The form for a business's public page: logo, background, bio, address, hours, and menu link.
 export default function ProfileForm({ business }) {
   const [state, action, pending] = useActionState(saveProfile, undefined);
 
   return (
     <form action={action} className="postform">
       <PhotoInput
-        key={state?.savedAt ?? 0}
+        key={`logo-${state?.savedAt ?? 0}`}
         name="logo"
         label="Logo"
-        maxSize={400}
+        maxSize={600}
         current={business.logo_url}
-        round
+        currentCrop={business.logo_crop}
+        frame="frame logo editor"
       />
+      <PhotoInput
+        key={`banner-${state?.savedAt ?? 0}`}
+        name="banner"
+        label="Background image (optional, shows behind your logo, name, and bio)"
+        maxSize={2000}
+        current={business.banner_url}
+        currentCrop={business.banner_crop}
+        frame="frame banner"
+      />
+      {business.banner_url && (
+        <label className="check">
+          <input name="removeBanner" type="checkbox" />
+          Remove background image
+        </label>
+      )}
       <label>
         Business name
         <input name="businessName" type="text" maxLength={80} defaultValue={business.business_name} required />

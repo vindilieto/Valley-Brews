@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
+import { serializeCrop } from "@/lib/crop";
 import { CATEGORIES, FREE_POST_LIMIT, todayInStateCollege } from "@/lib/format";
 import { checkImage, deleteImage, getImage, uploadImage } from "@/lib/images";
 import { hasPaidPlan } from "@/lib/plans";
@@ -26,6 +27,7 @@ export async function savePost(previousState, formData) {
     .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6);
   const image = getImage(formData, "image");
   const removeImage = Boolean(formData.get("removeImage"));
+  const imageCrop = serializeCrop(formData.get("imageCrop"));
   const isPublic = Boolean(formData.get("isPublic"));
   const today = todayInStateCollege();
 
@@ -83,7 +85,8 @@ export async function savePost(previousState, formData) {
     await sql`
       UPDATE posts SET title = ${title}, description = ${description}, category = ${category},
              post_date = ${date}, start_time = ${startTime}, end_time = ${endTime}, is_21_plus = ${is21Plus},
-             repeat_days = ${repeatDays}, image_url = ${imageUrl}, is_public = ${isPublic}
+             repeat_days = ${repeatDays}, image_url = ${imageUrl}, image_crop = ${imageUrl ? imageCrop : ""},
+             is_public = ${isPublic}
       WHERE id = ${postId} AND business_id = ${user.id}`;
     if (existing.image_url !== imageUrl) await deleteImage(existing.image_url);
     revalidatePath("/", "layout");
@@ -92,9 +95,9 @@ export async function savePost(previousState, formData) {
 
   await sql`
     INSERT INTO posts (business_id, title, description, category, post_date, start_time, end_time,
-                       is_21_plus, repeat_days, image_url, is_public)
+                       is_21_plus, repeat_days, image_url, image_crop, is_public)
     VALUES (${user.id}, ${title}, ${description}, ${category}, ${date}, ${startTime}, ${endTime},
-            ${is21Plus}, ${repeatDays}, ${imageUrl}, ${isPublic})`;
+            ${is21Plus}, ${repeatDays}, ${imageUrl}, ${imageUrl ? imageCrop : ""}, ${isPublic})`;
 
   revalidatePath("/", "layout");
   return { saved: true, savedAt: Date.now(), isPublic };

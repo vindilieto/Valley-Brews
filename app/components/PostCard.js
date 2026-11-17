@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { toggleFollow, toggleLike, toggleSave } from "@/app/actions/feed";
+import FramedImage from "@/app/components/FramedImage";
 import { formatRepeat, formatTimes } from "@/lib/format";
 
 export function Logo({ business, size = "small" }) {
   if (business.logo_url) {
-    return <img src={business.logo_url} alt="" className={`logo-img ${size}`} />;
+    return <FramedImage src={business.logo_url} crop={business.logo_crop} frame={`frame logo ${size}`} />;
   }
   return <span className={`logo-img ${size} letter`}>{business.business_name?.[0] ?? "?"}</span>;
 }
@@ -35,7 +36,7 @@ export default function PostCard({ post, user, showBusiness = true, when = "" })
           )}
         </div>
       )}
-      {post.image_url && <img src={post.image_url} alt="" className="postphoto" />}
+      {post.image_url && <FramedImage src={post.image_url} crop={post.image_crop} frame="frame post postphoto" />}
       <h3>{post.title}</h3>
       <p className="meta">
         {meta}

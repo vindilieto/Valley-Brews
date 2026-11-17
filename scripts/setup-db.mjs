@@ -78,6 +78,12 @@ await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS image_url TEXT NOT NULL DEF
 // Hidden posts stay on the business's Posts page but don't show on the feed or their page.
 await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT true`;
 
+// How each photo sits in its frame (see lib/crop.js), and the background image on business pages.
+await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS image_crop TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS logo_crop TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_url TEXT NOT NULL DEFAULT ''`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_crop TEXT NOT NULL DEFAULT ''`;
+
 // The class demo account: always exists, always Pro, password is reset on every run.
 const demoHash = await bcrypt.hash("password123!", 10);
 await sql`

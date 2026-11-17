@@ -28,7 +28,15 @@ export default function PostForm({ initial = {}, today, canRepeat }) {
         <textarea name="description" rows={3} maxLength={1000} defaultValue={initial.description} required />
       </label>
       {/* A new key after each post clears the old photo preview. */}
-      <PhotoInput key={state?.savedAt ?? 0} name="image" label="Photo (optional)" current={initial.image_url} />
+      <PhotoInput
+        key={state?.savedAt ?? 0}
+        name="image"
+        label="Photo (optional)"
+        current={initial.image_url}
+        currentCrop={initial.image_crop}
+        frame="frame post"
+        allowFit
+      />
       {editing && initial.image_url && (
         <label className="check">
           <input name="removeImage" type="checkbox" />

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { startCheckout } from "@/app/actions/billing";
 import { deletePost, togglePostVisibility } from "@/app/actions/posts";
+import FramedImage from "@/app/components/FramedImage";
 import PostForm from "@/app/components/PostForm";
 import ProfileForm from "@/app/components/ProfileForm";
 import SpecialsAssistant from "@/app/components/SpecialsAssistant";
@@ -34,12 +35,12 @@ export default async function DashboardPage({ searchParams }) {
   const canRepeat = hasPaidPlan(user.plan);
 
   const [business] = await sql`
-    SELECT business_name, bio, address, hours, menu_url, logo_url,
+    SELECT business_name, bio, address, hours, menu_url, logo_url, logo_crop, banner_url, banner_crop,
            (SELECT count(*)::int FROM follows WHERE follows.business_id = users.id) AS followers
     FROM users WHERE id = ${user.id}`;
   const posts = await sql`
     SELECT posts.id, posts.title, posts.category, posts.start_time, posts.end_time, posts.is_21_plus,
-           posts.repeat_days, posts.image_url, posts.is_public,
+           posts.repeat_days, posts.image_url, posts.image_crop, posts.is_public,
            to_char(posts.post_date, 'YYYY-MM-DD') AS date,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,
            (SELECT count(*)::int FROM saves WHERE saves.post_id = posts.id) AS saves
@@ -114,7 +115,7 @@ export default async function DashboardPage({ searchParams }) {
               const times = formatTimes(post.start_time, post.end_time);
               return (
                 <li key={post.id}>
-                  {post.image_url && <img src={post.image_url} alt="" className="thumb" />}
+                  {post.image_url && <FramedImage src={post.image_url} crop={post.image_crop} frame="frame post thumb" />}
                   <div className="grow">
                     <strong>{post.title}</strong>
                     {!post.is_public && <span className="badge hidden">Hidden</span>}

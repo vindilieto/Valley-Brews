@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { toggleFollow } from "@/app/actions/feed";
+import FramedImage from "@/app/components/FramedImage";
 import PostCard, { Logo } from "@/app/components/PostCard";
 import TopBar from "@/app/components/TopBar";
 import { getCurrentUser } from "@/lib/auth";
@@ -21,7 +22,7 @@ export default async function BusinessPage({ params }) {
   const userId = user?.id ?? 0;
 
   const [business] = await sql`
-    SELECT id, business_name, bio, address, hours, menu_url, logo_url,
+    SELECT id, business_name, bio, address, hours, menu_url, logo_url, logo_crop, banner_url, banner_crop,
            (SELECT count(*)::int FROM follows WHERE follows.business_id = users.id) AS followers,
            EXISTS (SELECT 1 FROM follows WHERE follows.business_id = users.id
                    AND follows.user_id = ${userId}) AS following
@@ -33,7 +34,7 @@ export default async function BusinessPage({ params }) {
   const posts = await sql`
     SELECT posts.id, posts.business_id, posts.title, posts.description, posts.category,
            posts.start_time, posts.end_time, posts.is_21_plus, posts.repeat_days, posts.image_url,
-           to_char(posts.post_date, 'YYYY-MM-DD') AS date,
+           posts.image_crop, to_char(posts.post_date, 'YYYY-MM-DD') AS date,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,
            EXISTS (SELECT 1 FROM likes WHERE likes.post_id = posts.id AND likes.user_id = ${userId}) AS liked,
            EXISTS (SELECT 1 FROM saves WHERE saves.post_id = posts.id AND saves.user_id = ${userId}) AS saved
@@ -49,7 +50,10 @@ export default async function BusinessPage({ params }) {
     <>
       <TopBar user={user} />
       <main className="container feed">
-        <header className="profile">
+        <header className={business.banner_url ? "profile withbanner" : "profile"}>
+          {business.banner_url && (
+            <FramedImage src={business.banner_url} crop={business.banner_crop} frame="frame bannerbg" />
+          )}
           <Logo business={business} size="large" />
           <div>
             <h1>{business.business_name}</h1>
@@ -57,6 +61,7 @@ export default async function BusinessPage({ params }) {
               {business.followers} {business.followers === 1 ? "follower" : "followers"} &middot; {posts.length}{" "}
               {posts.length === 1 ? "post" : "posts"}
             </p>
+            {business.bio && <p className="bio">{business.bio}</p>}
             {user?.id === business.id && (
               <Link href="/dashboard#page" className="pill">Edit my page</Link>
             )}
@@ -70,8 +75,6 @@ export default async function BusinessPage({ params }) {
             )}
           </div>
         </header>
-
-        {business.bio && <p className="bio">{business.bio}</p>}
 
         <div className="card details">
           {business.address && (
