@@ -63,7 +63,7 @@ export default async function BusinessPage({ params }) {
             </p>
             {business.bio && <p className="bio">{business.bio}</p>}
             {user?.id === business.id && (
-              <Link href="/dashboard#page" className="pill">Edit my page</Link>
+              <Link href="/profile/edit" className="pill">Edit my page</Link>
             )}
             {isCustomer && (
               <form action={toggleFollow}>

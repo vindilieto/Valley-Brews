@@ -4,7 +4,6 @@ import { startCheckout } from "@/app/actions/billing";
 import { deletePost, togglePostVisibility } from "@/app/actions/posts";
 import FramedImage from "@/app/components/FramedImage";
 import PostForm from "@/app/components/PostForm";
-import ProfileForm from "@/app/components/ProfileForm";
 import SpecialsAssistant from "@/app/components/SpecialsAssistant";
 import TopBar from "@/app/components/TopBar";
 import { getCurrentUser } from "@/lib/auth";
@@ -35,7 +34,7 @@ export default async function DashboardPage({ searchParams }) {
   const canRepeat = hasPaidPlan(user.plan);
 
   const [business] = await sql`
-    SELECT business_name, bio, address, hours, menu_url, logo_url, logo_crop, banner_url, banner_crop,
+    SELECT business_name,
            (SELECT count(*)::int FROM follows WHERE follows.business_id = users.id) AS followers
     FROM users WHERE id = ${user.id}`;
   const posts = await sql`
@@ -153,12 +152,6 @@ export default async function DashboardPage({ searchParams }) {
               );
             })}
           </ul>
-        </div>
-
-        <div className="card assistant" id="page">
-          <h2>Your business page</h2>
-          <p className="muted">This is what people see when they tap your name on the feed.</p>
-          <ProfileForm business={business} />
         </div>
       </main>
     </>
