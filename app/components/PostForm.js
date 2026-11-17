@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { savePost } from "@/app/actions/posts";
 import PhotoInput from "@/app/components/PhotoInput";
@@ -116,7 +117,8 @@ export default function PostForm({ initial = {}, today, canRepeat }) {
       {state?.error && <p className="error" role="alert">{state.error}</p>}
       {state?.saved && (
         <p className="success" role="status">
-          {state.isPublic ? "Posted! It's on the feed now." : "Saved as hidden. Only you can see it on your Posts page."}
+          {state.isPublic ? "Posted! It's on the feed now." : "Saved as hidden. Only you can see it on your Posts page."}{" "}
+          <Link href="/dashboard">See it in my posts</Link>
         </p>
       )}
 

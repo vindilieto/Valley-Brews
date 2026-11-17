@@ -1,29 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { startCheckout } from "@/app/actions/billing";
 import { deletePost, togglePostVisibility } from "@/app/actions/posts";
 import FramedImage from "@/app/components/FramedImage";
-import PostForm from "@/app/components/PostForm";
-import SpecialsAssistant from "@/app/components/SpecialsAssistant";
 import TopBar from "@/app/components/TopBar";
+import UpgradeButton from "@/app/components/UpgradeButton";
 import { getCurrentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
-import { formatDate, formatRepeat, formatTimes, FREE_POST_LIMIT, todayInStateCollege } from "@/lib/format";
-import { hasAI, hasPaidPlan, isUpgrade, PAID_PLANS, planName } from "@/lib/plans";
+import { formatDate, formatRepeat, formatTimes, todayInStateCollege } from "@/lib/format";
+import { hasAI, hasPaidPlan, planName } from "@/lib/plans";
 
 export const metadata = { title: "Posts | Valley Brews" };
 
-function UpgradeButton({ plan, label }) {
-  return (
-    <form action={startCheckout}>
-      <input type="hidden" name="plan" value={plan} />
-      <button className="button primary" type="submit">
-        {label}: ${PAID_PLANS[plan].cents / 100}/month
-      </button>
-    </form>
-  );
-}
-
+// The Posts tab: manage the posts you've made. New Post and AI Assistant open their own pages.
 export default async function DashboardPage({ searchParams }) {
   const { checkout } = await searchParams;
   const user = await getCurrentUser();
@@ -31,7 +19,6 @@ export default async function DashboardPage({ searchParams }) {
   if (user.role !== "business") redirect("/feed");
 
   const today = todayInStateCollege();
-  const canRepeat = hasPaidPlan(user.plan);
 
   const [business] = await sql`
     SELECT business_name,
@@ -66,92 +53,86 @@ export default async function DashboardPage({ searchParams }) {
           </p>
         )}
 
-        {!canRepeat && (
-          <div className="card assistant">
-            <h2>Upgrade your plan</h2>
-            <div className="planpick">
-              <div>
-                <h3>Plus</h3>
-                <p className="muted">Unlimited posts, and weekly specials that repeat on their own.</p>
-                <UpgradeButton plan="plus" label="Get Plus" />
-              </div>
-              <div>
-                <h3>Pro</h3>
-                <p className="muted">Everything in Plus, the AI specials assistant, and top spots in the feed.</p>
-                <UpgradeButton plan="pro" label="Get Pro" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {hasAI(user.plan) ? (
-          <SpecialsAssistant today={today} />
-        ) : (
-          canRepeat && (
+        {/* Your posts on the left; the New Post and AI Assistant buttons stay in view on the right. */}
+        <div className="postslayout">
+          <div>
             <div className="card assistant">
-              <h2>AI specials assistant</h2>
-              <p className="muted">Upgrade to Pro to turn a rough note into a finished post in seconds.</p>
-              {isUpgrade(user.plan, "pro") && (
-                <div className="upgrade"><UpgradeButton plan="pro" label="Upgrade to Pro" /></div>
+              <h2>Your posts</h2>
+              {posts.length === 0 && (
+                <p className="muted">Nothing posted yet. Tap New Post to write your first one.</p>
               )}
+              <ul className="mylist">
+                {posts.map((post) => {
+                  const times = formatTimes(post.start_time, post.end_time);
+                  return (
+                    <li key={post.id}>
+                      {post.image_url && (
+                        <FramedImage src={post.image_url} crop={post.image_crop} frame="frame post thumb" />
+                      )}
+                      <div className="grow">
+                        <strong>{post.title}</strong>
+                        {!post.is_public && <span className="badge hidden">Hidden</span>}
+                        <p className="muted">
+                          {formatRepeat(post.repeat_days) || formatDate(post.date)}
+                          {times && ` · ${times}`}
+                          {" · "}{post.categories.join(", ")}{post.is_21_plus && " · 21+"}
+                        </p>
+                        <p className="muted">
+                          {post.likes} {post.likes === 1 ? "like" : "likes"} &middot; {post.saves}{" "}
+                          {post.saves === 1 ? "save" : "saves"}
+                        </p>
+                      </div>
+                      <div className="postcontrols">
+                        <form action={togglePostVisibility}>
+                          <input type="hidden" name="postId" value={post.id} />
+                          <button
+                            type="submit"
+                            className="toggle"
+                            role="switch"
+                            aria-checked={post.is_public}
+                            aria-label={post.is_public ? "Shown on the feed. Click to hide." : "Hidden. Click to show."}
+                          >
+                            <span className="slider" aria-hidden="true" />
+                            {post.is_public ? "Shown" : "Hidden"}
+                          </button>
+                        </form>
+                        <Link href={`/dashboard/edit/${post.id}`}>Edit</Link>
+                        <form action={deletePost}>
+                          <input type="hidden" name="postId" value={post.id} />
+                          <button type="submit" className="linkbutton danger">Delete</button>
+                        </form>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          )
-        )}
 
-        <div className="card assistant">
-          <h2>Write a post yourself</h2>
-          {!canRepeat && (
-            <p className="muted">Free accounts can have up to {FREE_POST_LIMIT} upcoming posts.</p>
-          )}
-          <PostForm today={today} canRepeat={canRepeat} />
-        </div>
+            {!hasPaidPlan(user.plan) && (
+              <div className="card assistant">
+                <h2>Upgrade your plan</h2>
+                <div className="planpick">
+                  <div>
+                    <h3>Plus</h3>
+                    <p className="muted">Unlimited posts, and weekly specials that repeat on their own.</p>
+                    <UpgradeButton plan="plus" label="Get Plus" />
+                  </div>
+                  <div>
+                    <h3>Pro</h3>
+                    <p className="muted">Everything in Plus, the AI specials assistant, and top spots in the feed.</p>
+                    <UpgradeButton plan="pro" label="Get Pro" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-        <div className="card assistant">
-          <h2>Your posts</h2>
-          {posts.length === 0 && <p className="muted">Nothing posted yet. Your posts will show here, and on the feed unless you hide them.</p>}
-          <ul className="mylist">
-            {posts.map((post) => {
-              const times = formatTimes(post.start_time, post.end_time);
-              return (
-                <li key={post.id}>
-                  {post.image_url && <FramedImage src={post.image_url} crop={post.image_crop} frame="frame post thumb" />}
-                  <div className="grow">
-                    <strong>{post.title}</strong>
-                    {!post.is_public && <span className="badge hidden">Hidden</span>}
-                    <p className="muted">
-                      {formatRepeat(post.repeat_days) || formatDate(post.date)}
-                      {times && ` · ${times}`}
-                      {" · "}{post.categories.join(", ")}{post.is_21_plus && " · 21+"}
-                    </p>
-                    <p className="muted">
-                      {post.likes} {post.likes === 1 ? "like" : "likes"} &middot; {post.saves}{" "}
-                      {post.saves === 1 ? "save" : "saves"}
-                    </p>
-                  </div>
-                  <div className="postcontrols">
-                    <form action={togglePostVisibility}>
-                      <input type="hidden" name="postId" value={post.id} />
-                      <button
-                        type="submit"
-                        className="toggle"
-                        role="switch"
-                        aria-checked={post.is_public}
-                        aria-label={post.is_public ? "Shown on the feed. Click to hide." : "Hidden. Click to show."}
-                      >
-                        <span className="slider" aria-hidden="true" />
-                        {post.is_public ? "Shown" : "Hidden"}
-                      </button>
-                    </form>
-                    <Link href={`/dashboard/edit/${post.id}`}>Edit</Link>
-                    <form action={deletePost}>
-                      <input type="hidden" name="postId" value={post.id} />
-                      <button type="submit" className="linkbutton danger">Delete</button>
-                    </form>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <aside className="postactions" aria-label="Create a post">
+            <Link href="/dashboard/new" className="button primary">+ New Post</Link>
+            <Link href="/dashboard/assistant" className="button aibutton">
+              AI Assistant{!hasAI(user.plan) && <span className="protag">Pro</span>}
+            </Link>
+          </aside>
         </div>
       </main>
     </>
