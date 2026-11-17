@@ -65,7 +65,7 @@ export default async function Home() {
               <h3>You get</h3>
               <dl>
                 <dt>A structured post</dt>
-                <dd>Tuesday, 9 PM to close. Category: Specials. 21+</dd>
+                <dd>Tuesday, 9 PM to close. Food Deals, Drink Deals. 21+</dd>
                 <dt>An Instagram caption</dt>
                 <dd>Tuesday night plans: sorted. Half-off wings and $3 wells from 9 to close.</dd>
                 <dt>A text message</dt>

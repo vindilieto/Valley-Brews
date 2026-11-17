@@ -43,20 +43,26 @@ export default function PostForm({ initial = {}, today, canRepeat }) {
           Remove photo
         </label>
       )}
-      <div className="row">
-        <label>
-          {canRepeat ? "Date (or first date, if it repeats)" : "Date"}
-          <input name="date" type="date" min={minDate} defaultValue={initial.date} required />
-        </label>
-        <label>
-          Category
-          <select name="category" defaultValue={initial.category ?? "Specials"}>
-            {CATEGORIES.map((category) => (
-              <option key={category}>{category}</option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <fieldset className="repeat">
+        <legend>Categories <span className="muted">(pick all that fit)</span></legend>
+        <div className="days">
+          {CATEGORIES.map((category) => (
+            <label key={category} className="dayopt">
+              <input
+                type="checkbox"
+                name="categories"
+                value={category}
+                defaultChecked={initial.categories?.includes(category)}
+              />
+              {category}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <label>
+        {canRepeat ? "Date (or first date, if it repeats)" : "Date"}
+        <input name="date" type="date" min={minDate} defaultValue={initial.date} required />
+      </label>
 
       <fieldset className="repeat" disabled={!canRepeat}>
         <legend>

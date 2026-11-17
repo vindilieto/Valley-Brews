@@ -32,7 +32,7 @@ export default async function BusinessPage({ params }) {
 
   // Repeating posts first, then upcoming one-time posts by date.
   const posts = await sql`
-    SELECT posts.id, posts.business_id, posts.title, posts.description, posts.category,
+    SELECT posts.id, posts.business_id, posts.title, posts.description, posts.categories,
            posts.start_time, posts.end_time, posts.is_21_plus, posts.repeat_days, posts.image_url,
            posts.image_crop, to_char(posts.post_date, 'YYYY-MM-DD') AS date,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,

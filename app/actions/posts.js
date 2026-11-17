@@ -18,7 +18,7 @@ export async function savePost(previousState, formData) {
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const category = String(formData.get("category") ?? "");
+  const categories = CATEGORIES.filter((category) => formData.getAll("categories").includes(category));
   const date = String(formData.get("date") ?? "");
   const startTime = String(formData.get("startTime") ?? "");
   const endTime = formData.get("endsAtClose") ? "close" : String(formData.get("endTime") ?? "");
@@ -45,7 +45,7 @@ export async function savePost(previousState, formData) {
   if (!description || description.length > 1000) {
     return { error: "Please add a description (1,000 characters max)." };
   }
-  if (!CATEGORIES.includes(category)) return { error: "Please pick a category." };
+  if (categories.length === 0) return { error: "Please pick at least one category." };
   if (!DATE_PATTERN.test(date)) return { error: "Please pick a date." };
   // An edited post can keep its original date (a weekly special may have started weeks ago).
   if (date < today && date !== existing?.date) return { error: "That date has already passed." };
@@ -83,7 +83,7 @@ export async function savePost(previousState, formData) {
 
   if (existing) {
     await sql`
-      UPDATE posts SET title = ${title}, description = ${description}, category = ${category},
+      UPDATE posts SET title = ${title}, description = ${description}, categories = ${categories},
              post_date = ${date}, start_time = ${startTime}, end_time = ${endTime}, is_21_plus = ${is21Plus},
              repeat_days = ${repeatDays}, image_url = ${imageUrl}, image_crop = ${imageUrl ? imageCrop : ""},
              is_public = ${isPublic}
@@ -94,9 +94,9 @@ export async function savePost(previousState, formData) {
   }
 
   await sql`
-    INSERT INTO posts (business_id, title, description, category, post_date, start_time, end_time,
+    INSERT INTO posts (business_id, title, description, categories, post_date, start_time, end_time,
                        is_21_plus, repeat_days, image_url, image_crop, is_public)
-    VALUES (${user.id}, ${title}, ${description}, ${category}, ${date}, ${startTime}, ${endTime},
+    VALUES (${user.id}, ${title}, ${description}, ${categories}, ${date}, ${startTime}, ${endTime},
             ${is21Plus}, ${repeatDays}, ${imageUrl}, ${imageUrl ? imageCrop : ""}, ${isPublic})`;
 
   revalidatePath("/", "layout");

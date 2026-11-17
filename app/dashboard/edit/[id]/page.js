@@ -17,7 +17,7 @@ export default async function EditPostPage({ params }) {
   const { id } = await params;
   // Only the business that wrote the post can edit it.
   const [post] = await sql`
-    SELECT id, title, description, category, start_time, end_time, is_21_plus, repeat_days, image_url,
+    SELECT id, title, description, categories, start_time, end_time, is_21_plus, repeat_days, image_url,
            image_crop, is_public, to_char(post_date, 'YYYY-MM-DD') AS date
     FROM posts WHERE id = ${Number(id) || 0} AND business_id = ${user.id}`;
   if (!post) notFound();

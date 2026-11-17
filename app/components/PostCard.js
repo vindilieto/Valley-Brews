@@ -16,7 +16,7 @@ export default function PostCard({ post, user, showBusiness = true, when = "" })
   const isCustomer = user?.role === "customer";
   const times = formatTimes(post.start_time, post.end_time);
   const repeat = formatRepeat(post.repeat_days);
-  const meta = [when, times, post.category].filter(Boolean).join(" · ");
+  const meta = [when, times, post.categories.join(", ")].filter(Boolean).join(" · ");
 
   return (
     <article className="card post">

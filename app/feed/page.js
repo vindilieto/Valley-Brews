@@ -16,12 +16,19 @@ const VIEWS = [
   { id: "saved", label: "Saved" },
 ];
 
-function feedLink(view, category) {
+function feedLink(view, categories) {
   const params = new URLSearchParams();
   if (view !== "all") params.set("view", view);
-  if (category) params.set("category", category);
+  for (const category of categories) params.append("category", category);
   const query = params.toString();
   return query ? `/feed?${query}` : "/feed";
+}
+
+// Turns one category filter on or off, keeping the others.
+function toggled(categories, category) {
+  return categories.includes(category)
+    ? categories.filter((c) => c !== category)
+    : CATEGORIES.filter((c) => c === category || categories.includes(c));
 }
 
 export default async function FeedPage({ searchParams }) {
@@ -29,7 +36,9 @@ export default async function FeedPage({ searchParams }) {
   const isCustomer = user?.role === "customer";
   const params = await searchParams;
   const view = isCustomer && VIEWS.some((v) => v.id === params.view) ? params.view : "all";
-  const category = CATEGORIES.includes(params.category) ? params.category : "";
+  // Any number of category filters, e.g. ?category=Events&category=Game+Day+Specials
+  const picked = [params.category ?? []].flat();
+  const categories = CATEGORIES.filter((c) => picked.includes(c));
 
   const today = todayInStateCollege();
   const weekEnd = addDays(today, 6);
@@ -43,7 +52,7 @@ export default async function FeedPage({ searchParams }) {
     WITH days AS (
       SELECT d::date AS day FROM generate_series(${today}::date, ${lastDay}::date, interval '1 day') AS d
     )
-    SELECT posts.id, posts.business_id, posts.title, posts.description, posts.category,
+    SELECT posts.id, posts.business_id, posts.title, posts.description, posts.categories,
            posts.start_time, posts.end_time, posts.is_21_plus, posts.repeat_days, posts.image_url,
            posts.image_crop, to_char(days.day, 'YYYY-MM-DD') AS date,
            users.business_name, users.logo_url, users.logo_crop,
@@ -60,7 +69,7 @@ export default async function FeedPage({ searchParams }) {
           AND extract(dow FROM days.day)::int = ANY(posts.repeat_days))
     )
     WHERE posts.is_public
-      AND (${category} = '' OR posts.category = ${category})
+      AND (cardinality(${categories}::text[]) = 0 OR posts.categories && ${categories}::text[])
       AND (${view} <> 'following' OR EXISTS (
             SELECT 1 FROM follows WHERE follows.business_id = posts.business_id AND follows.user_id = ${userId}))
       AND (${view} <> 'saved' OR EXISTS (
@@ -103,18 +112,25 @@ export default async function FeedPage({ searchParams }) {
         {isCustomer && (
           <nav className="tabs" aria-label="Feed views">
             {VIEWS.map((v) => (
-              <Link key={v.id} href={feedLink(v.id, category)} className={v.id === view ? "active" : ""}>
+              <Link key={v.id} href={feedLink(v.id, categories)} className={v.id === view ? "active" : ""}>
                 {v.label}
               </Link>
             ))}
           </nav>
         )}
 
+        {/* Tap a category to add it to the filter, tap again to remove it. "All" clears them. */}
         <nav className="chips" aria-label="Categories">
-          <Link href={feedLink(view, "")} className={!category ? "active" : ""}>All</Link>
-          {CATEGORIES.map((c) => (
-            <Link key={c} href={feedLink(view, c)} className={c === category ? "active" : ""}>{c}</Link>
-          ))}
+          <Link href={feedLink(view, [])} className={categories.length === 0 ? "active" : ""}>All</Link>
+          {CATEGORIES.map((c) => {
+            const on = categories.includes(c);
+            return (
+              <Link key={c} href={feedLink(view, toggled(categories, c))} className={on ? "active" : ""}
+                aria-pressed={on}>
+                {on && "✓ "}{c}
+              </Link>
+            );
+          })}
         </nav>
 
         {view !== "saved" && (

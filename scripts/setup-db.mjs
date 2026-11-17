@@ -84,6 +84,18 @@ await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS logo_crop TEXT NOT NULL DEF
 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_url TEXT NOT NULL DEFAULT ''`;
 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_crop TEXT NOT NULL DEFAULT ''`;
 
+// A post can be in several categories (Drink Deals, Food Deals, Events, Game Day Specials).
+// Older posts had one category with the old names; convert them once. The old column is no longer used.
+await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS categories TEXT[] NOT NULL DEFAULT '{}'`;
+await sql`ALTER TABLE posts ALTER COLUMN category DROP NOT NULL`;
+await sql`
+  UPDATE posts SET categories = ARRAY[CASE category
+    WHEN 'Specials' THEN 'Drink Deals'
+    WHEN 'Food' THEN 'Food Deals'
+    WHEN 'Game Day' THEN 'Game Day Specials'
+    ELSE 'Events' END]
+  WHERE cardinality(categories) = 0`;
+
 // The class demo account: always exists, always Pro, password is reset on every run.
 const demoHash = await bcrypt.hash("password123!", 10);
 await sql`
@@ -106,14 +118,14 @@ const [{ upcoming }] = await sql`
     AND post_date >= (now() AT TIME ZONE 'America/New_York')::date`;
 if (upcoming === 0) {
   await sql`
-    INSERT INTO posts (business_id, title, description, category, post_date, start_time, end_time, is_21_plus)
+    INSERT INTO posts (business_id, title, description, categories, post_date, start_time, end_time, is_21_plus)
     VALUES
       (${demo.id}, 'Half-Off Wings Night', 'Half-off wings all night with $3 well drinks. Bring your friends.',
-       'Specials', (now() AT TIME ZONE 'America/New_York')::date + 1, '21:00', 'close', true),
+       ${["Food Deals", "Drink Deals"]}, (now() AT TIME ZONE 'America/New_York')::date + 1, '21:00', 'close', true),
       (${demo.id}, 'Trivia Night', 'Teams of up to six. Winners get a $50 gift card.',
-       'Events', (now() AT TIME ZONE 'America/New_York')::date + 2, '20:00', '22:00', false),
+       ${["Events"]}, (now() AT TIME ZONE 'America/New_York')::date + 2, '20:00', '22:00', false),
       (${demo.id}, 'Game Day Tailgate Platter', 'Wings, sliders, and fries for the whole group. Doors open early.',
-       'Game Day', (now() AT TIME ZONE 'America/New_York')::date + 4, '11:00', '', false)`;
+       ${["Game Day Specials", "Food Deals"]}, (now() AT TIME ZONE 'America/New_York')::date + 4, '11:00', '', false)`;
 }
 
 const rows = await sql`SELECT id, email, business_name, plan, role FROM users ORDER BY id`;

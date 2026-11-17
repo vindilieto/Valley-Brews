@@ -39,7 +39,7 @@ export default async function DashboardPage({ searchParams }) {
            (SELECT count(*)::int FROM follows WHERE follows.business_id = users.id) AS followers
     FROM users WHERE id = ${user.id}`;
   const posts = await sql`
-    SELECT posts.id, posts.title, posts.category, posts.start_time, posts.end_time, posts.is_21_plus,
+    SELECT posts.id, posts.title, posts.categories, posts.start_time, posts.end_time, posts.is_21_plus,
            posts.repeat_days, posts.image_url, posts.image_crop, posts.is_public,
            to_char(posts.post_date, 'YYYY-MM-DD') AS date,
            (SELECT count(*)::int FROM likes WHERE likes.post_id = posts.id) AS likes,
@@ -122,7 +122,7 @@ export default async function DashboardPage({ searchParams }) {
                     <p className="muted">
                       {formatRepeat(post.repeat_days) || formatDate(post.date)}
                       {times && ` · ${times}`}
-                      {" · "}{post.category}{post.is_21_plus && " · 21+"}
+                      {" · "}{post.categories.join(", ")}{post.is_21_plus && " · 21+"}
                     </p>
                     <p className="muted">
                       {post.likes} {post.likes === 1 ? "like" : "likes"} &middot; {post.saves}{" "}
